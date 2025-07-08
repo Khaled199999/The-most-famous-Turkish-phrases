@@ -162,6 +162,19 @@ const prevBtn = document.getElementById("prev");
 const nextBtn = document.getElementById("next");
 const repeatBtn = document.getElementById("repeat");
 const favBtn = document.getElementById("fav");
+const showFavsBtn = document.getElementById("show-favs");
+const favsContainer = document.getElementById("favs-container");
+
+showFavsBtn.onclick = () => {
+  const favs = JSON.parse(localStorage.getItem("favorites") || "[]");
+  favsContainer.innerHTML = "";
+  favs.forEach((phrase) => {
+    const div = document.createElement("div");
+    div.className = "phrase";
+    div.innerHTML = `<h3>${phrase.turkish}</h3><p>${phrase.arabic}</p>`;
+    favsContainer.appendChild(div);
+  });
+};
 
 function showPhrase(index) {
   const phrase = phrases[index];
