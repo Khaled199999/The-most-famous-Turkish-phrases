@@ -152,9 +152,10 @@ const phrases = [
   { turkish: "Ne yapıyorsun?", arabic: "ماذا تفعل؟" },
   { turkish: "Bana katıl.", arabic: "انضم إلي." }
 ];
-
+// ✅ مؤشر الجملة الحالية
 let currentIndex = 0;
 
+// ✅ عناصر الصفحة
 const turkishEl = document.getElementById("turkish");
 const arabicEl = document.getElementById("arabic");
 const speakBtn = document.getElementById("speak");
@@ -165,57 +166,34 @@ const favBtn = document.getElementById("fav");
 const showFavsBtn = document.getElementById("show-favs");
 const favsContainer = document.getElementById("favs-container");
 
-showFavsBtn.onclick = () => {
-  const favs = JSON.parse(localStorage.getItem("favorites") || "[]");
-  favsContainer.innerHTML = "";
-  favs.forEach((phrase) => {
-    const div = document.createElement("div");
-    div.className = "phrase";
-    div.innerHTML = `<h3>${phrase.turkish}</h3><p>${phrase.arabic}</p>`;
-    favsContainer.appendChild(div);
-  });
-};
-
+// ✅ عرض الجملة الحالية
 function showPhrase(index) {
   const phrase = phrases[index];
   turkishEl.textContent = phrase.turkish;
   arabicEl.textContent = phrase.arabic;
 }
 
+// ✅ نطق الجملة الحالية
 function speakPhrase() {
   const utterance = new SpeechSynthesisUtterance(phrases[currentIndex].turkish);
   utterance.lang = "tr-TR";
   window.speechSynthesis.speak(utterance);
 }
 
-speakBtn.onclick = speakPhrase;
-repeatBtn.onclick = speakPhrase;
-
-prevBtn.onclick = () => {
-  if (currentIndex > 0) {
-    currentIndex--;
-    showPhrase(currentIndex);
-  }
-};
-
-nextBtn.onclick = () => {
-  if (currentIndex < phrases.length - 1) {
-    currentIndex++;
-    showPhrase(currentIndex);
-  }
-};
-
+// ✅ تحديث نص زر المفضلة
 function updateFavButton() {
   const favs = JSON.parse(localStorage.getItem("favorites") || "[]");
   const phrase = phrases[currentIndex];
-  const exists = favs.find(p => p.turkish === phrase.turkish);
+  const exists = favs.some(p => p.turkish === phrase.turkish);
   favBtn.textContent = exists ? "⭐ إزالة من المفضلة" : "⭐ إضافة للمفضلة";
 }
 
+// ✅ إضافة/إزالة المفضلة
 favBtn.onclick = () => {
   let favs = JSON.parse(localStorage.getItem("favorites") || "[]");
   const phrase = phrases[currentIndex];
   const index = favs.findIndex(p => p.turkish === phrase.turkish);
+  
   if (index === -1) {
     favs.push(phrase);
     alert("✅ أُضيفت إلى المفضلة!");
@@ -227,14 +205,7 @@ favBtn.onclick = () => {
   updateFavButton();
 };
 
-nextBtn.onclick = () => {
-  if (currentIndex < phrases.length - 1) {
-    currentIndex++;
-    showPhrase(currentIndex);
-    updateFavButton();
-  }
-};
-
+// ✅ أزرار التنقّل
 prevBtn.onclick = () => {
   if (currentIndex > 0) {
     currentIndex--;
@@ -243,6 +214,34 @@ prevBtn.onclick = () => {
   }
 };
 
+nextBtn.onclick = () => {
+  if (currentIndex < phrases.length - 1) {
+    currentIndex++;
+    showPhrase(currentIndex);
+    updateFavButton();
+  }
+};
+
+// ✅ زر التكرار
+speakBtn.onclick = speakPhrase;
+repeatBtn.onclick = speakPhrase;
+
+// ✅ عرض المفضلات
+showFavsBtn.onclick = () => {
+  const favs = JSON.parse(localStorage.getItem("favorites") || "[]");
+  favsContainer.innerHTML = "";
+  if (favs.length === 0) {
+    favsContainer.innerHTML = "<p>📂 لا توجد جُمل مضافة بعد.</p>";
+  } else {
+    favs.forEach((phrase) => {
+      const div = document.createElement("div");
+      div.className = "phrase";
+      div.innerHTML = `<h3>${phrase.turkish}</h3><p>${phrase.arabic}</p>`;
+      favsContainer.appendChild(div);
+    });
+  }
+};
+
+// ✅ عند بداية التشغيل
 showPhrase(currentIndex);
 updateFavButton();
-
