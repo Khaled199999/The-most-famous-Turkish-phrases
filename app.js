@@ -205,16 +205,44 @@ nextBtn.onclick = () => {
   }
 };
 
-favBtn.onclick = () => {
+function updateFavButton() {
   const favs = JSON.parse(localStorage.getItem("favorites") || "[]");
   const phrase = phrases[currentIndex];
-  if (!favs.find(p => p.turkish === phrase.turkish)) {
+  const exists = favs.find(p => p.turkish === phrase.turkish);
+  favBtn.textContent = exists ? "⭐ إزالة من المفضلة" : "⭐ إضافة للمفضلة";
+}
+
+favBtn.onclick = () => {
+  let favs = JSON.parse(localStorage.getItem("favorites") || "[]");
+  const phrase = phrases[currentIndex];
+  const index = favs.findIndex(p => p.turkish === phrase.turkish);
+  if (index === -1) {
     favs.push(phrase);
-    localStorage.setItem("favorites", JSON.stringify(favs));
-    alert("تمت إضافة الجملة إلى المفضلة!");
+    alert("✅ أُضيفت إلى المفضلة!");
   } else {
-    alert("هذه الجملة محفوظة بالفعل.");
+    favs.splice(index, 1);
+    alert("❌ أُزيلت من المفضلة!");
+  }
+  localStorage.setItem("favorites", JSON.stringify(favs));
+  updateFavButton();
+};
+
+nextBtn.onclick = () => {
+  if (currentIndex < phrases.length - 1) {
+    currentIndex++;
+    showPhrase(currentIndex);
+    updateFavButton();
+  }
+};
+
+prevBtn.onclick = () => {
+  if (currentIndex > 0) {
+    currentIndex--;
+    showPhrase(currentIndex);
+    updateFavButton();
   }
 };
 
 showPhrase(currentIndex);
+updateFavButton();
+
