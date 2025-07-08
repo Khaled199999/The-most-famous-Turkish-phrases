@@ -153,29 +153,55 @@ const phrases = [
   { turkish: "Bana katıl.", arabic: "انضم إلي." }
 ];
 
-const container = document.getElementById("phrases-container");
+let currentIndex = 0;
 
-phrases.forEach((phrase) => {
-  const div = document.createElement("div");
-  div.className = "phrase";
+const turkishEl = document.getElementById("turkish");
+const arabicEl = document.getElementById("arabic");
+const speakBtn = document.getElementById("speak");
+const prevBtn = document.getElementById("prev");
+const nextBtn = document.getElementById("next");
+const repeatBtn = document.getElementById("repeat");
+const favBtn = document.getElementById("fav");
 
-  const turkish = document.createElement("h3");
-  turkish.textContent = phrase.turkish;
+function showPhrase(index) {
+  const phrase = phrases[index];
+  turkishEl.textContent = phrase.turkish;
+  arabicEl.textContent = phrase.arabic;
+}
 
-  const arabic = document.createElement("p");
-  arabic.textContent = phrase.arabic;
+function speakPhrase() {
+  const utterance = new SpeechSynthesisUtterance(phrases[currentIndex].turkish);
+  utterance.lang = "tr-TR";
+  window.speechSynthesis.speak(utterance);
+}
 
-  const button = document.createElement("button");
-  button.textContent = "🔊";
-  button.onclick = () => {
-    const msg = new SpeechSynthesisUtterance(phrase.turkish);
-    msg.lang = "tr-TR";
-    window.speechSynthesis.speak(msg);
-  };
+speakBtn.onclick = speakPhrase;
+repeatBtn.onclick = speakPhrase;
 
-  div.appendChild(turkish);
-  div.appendChild(arabic);
-  div.appendChild(button);
+prevBtn.onclick = () => {
+  if (currentIndex > 0) {
+    currentIndex--;
+    showPhrase(currentIndex);
+  }
+};
 
-  container.appendChild(div);
-});
+nextBtn.onclick = () => {
+  if (currentIndex < phrases.length - 1) {
+    currentIndex++;
+    showPhrase(currentIndex);
+  }
+};
+
+favBtn.onclick = () => {
+  const favs = JSON.parse(localStorage.getItem("favorites") || "[]");
+  const phrase = phrases[currentIndex];
+  if (!favs.find(p => p.turkish === phrase.turkish)) {
+    favs.push(phrase);
+    localStorage.setItem("favorites", JSON.stringify(favs));
+    alert("تمت إضافة الجملة إلى المفضلة!");
+  } else {
+    alert("هذه الجملة محفوظة بالفعل.");
+  }
+};
+
+showPhrase(currentIndex);
