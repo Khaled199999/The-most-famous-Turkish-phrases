@@ -152,3 +152,30 @@ const phrases = [
   { turkish: "Ne yapıyorsun?", arabic: "ماذا تفعل؟" },
   { turkish: "Bana katıl.", arabic: "انضم إلي." }
 ];
+
+const container = document.getElementById("phrases-container");
+
+phrases.forEach((phrase) => {
+  const div = document.createElement("div");
+  div.className = "phrase";
+
+  const turkish = document.createElement("h3");
+  turkish.textContent = phrase.turkish;
+
+  const arabic = document.createElement("p");
+  arabic.textContent = phrase.arabic;
+
+  const button = document.createElement("button");
+  button.textContent = "🔊";
+  button.onclick = () => {
+    const msg = new SpeechSynthesisUtterance(phrase.turkish);
+    msg.lang = "tr-TR";
+    window.speechSynthesis.speak(msg);
+  };
+
+  div.appendChild(turkish);
+  div.appendChild(arabic);
+  div.appendChild(button);
+
+  container.appendChild(div);
+});
